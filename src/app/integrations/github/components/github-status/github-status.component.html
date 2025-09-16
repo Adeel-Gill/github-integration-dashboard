@@ -1,0 +1,17 @@
+<div class="status">
+    <ng-container *ngIf="connected; else notConnected">
+        <mat-icon color="primary">check_circle</mat-icon>
+        <div class="meta">
+            <div><strong>Connected</strong></div>
+            <div *ngIf="user">as {{ user.login || user.name }}</div>
+            <div *ngIf="connectedAt">since {{ connectedAt | date:'medium' }}</div>
+        </div>
+    </ng-container>
+    <ng-template #notConnected>
+        <mat-icon color="warn">error_outline</mat-icon>
+        <div class="meta">
+            <div><strong>Not connected</strong></div>
+            <div>Click connect to authorize</div>
+        </div>
+    </ng-template>
+</div>

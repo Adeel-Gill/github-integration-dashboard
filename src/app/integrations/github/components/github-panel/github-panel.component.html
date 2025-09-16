@@ -1,0 +1,33 @@
+<mat-card class="github-panel-card">
+    <mat-card-title>GitHub Integration</mat-card-title>
+    <mat-card-content>
+        <div class="top-row">
+            <app-github-status></app-github-status>
+            <div class="actions">
+                <app-github-connect *ngIf="!connected"></app-github-connect>
+                <button mat-button color="warn" (click)="onRemove()" *ngIf="connected">Remove Integration</button>
+                <button mat-button (click)="onResync()" *ngIf="connected">Re-sync Integration</button>
+            </div>
+        </div>
+
+        <mat-expansion-panel *ngIf="connected">
+            <mat-expansion-panel-header>
+                <mat-panel-title>Data Viewer</mat-panel-title>
+                <mat-panel-description>Show your GitHub collections</mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <div class="collection-select">
+                <mat-form-field appearance="fill">
+                    <mat-label>Select Collection</mat-label>
+                    <mat-select [(value)]="selectedCollection">
+                        <mat-option *ngFor="let c of collections" [value]="c">{{ c }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div *ngIf="selectedCollection">
+                <app-ag-grid-view [collection]="selectedCollection"></app-ag-grid-view>
+            </div>
+        </mat-expansion-panel>
+    </mat-card-content>
+</mat-card>

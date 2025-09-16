@@ -1,0 +1,10 @@
+.status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  .meta {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+}
