@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { GithubIntegrationService } from '../../services/github-integration.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-github-callback',
@@ -10,25 +11,20 @@ import { Router } from '@angular/router';
   styleUrls: ['./github-callback.component.scss']
 })
 export class GithubCallbackComponent implements OnInit {
-  constructor(
-    private svc: GithubIntegrationService,
-    private snack: MatSnackBar,
-    private router: Router
-  ) { }
+  constructor(private route: ActivatedRoute, private http: HttpClient) {}
+
 
   ngOnInit() {
-    this.svc.getStatus().subscribe({
-      next: res => {
-        if (res && res.connected) {
-          this.snack.open('GitHub connection successful', 'OK', { duration: 2000 });
-        } else {
-          this.snack.open('GitHub connection failed', 'OK', { duration: 3000 });
-        }
-        this.router.navigate(['/integrations/github']);
-      },
-      error: () => {
-        this.snack.open('Error confirming connection', 'OK', { duration: 3000 });
-        this.router.navigate(['/integrations/github']);
+    this.route.queryParams.subscribe(params => {
+      const code = params['code'];
+      console.log('Authorization Code:', code);
+      
+      if (code) {
+        // Send code to backend
+        this.http.post('http://localhost:3000/github/callback', { code })
+          .subscribe(res => {
+            console.log('GitHub Token Response:', res);
+          });
       }
     });
   }

@@ -5,7 +5,7 @@ import { GithubCallbackComponent } from './components/github-callback/github-cal
 
 const routes: Routes = [
   { path: '', component: GithubPanelComponent },
-  { path: 'callback', component: GithubCallbackComponent }
+  { path: 'auth/callback', component: GithubCallbackComponent }
 ];
 
 @NgModule({
