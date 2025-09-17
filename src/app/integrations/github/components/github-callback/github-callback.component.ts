@@ -16,12 +16,10 @@ export class GithubCallbackComponent implements OnInit {
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
-      const code = params['code'];
-      console.log('Authorization Code:', code);
-      
+      const code = params['code'];      
       if (code) {
         // Send code to backend
-        this.http.post('http://localhost:3000/github/callback', { code })
+        this.http.post('http://localhost:3000/api/github/callback', { code })
           .subscribe(res => {
             console.log('GitHub Token Response:', res);
           });
