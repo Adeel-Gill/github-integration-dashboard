@@ -1,28 +1,61 @@
 import { Component, OnInit } from '@angular/core';
-import { GithubIntegrationService } from '../../services/github-integration.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { GithubIntegrationService } from '../../services/github-integration.service';
 
 @Component({
   selector: 'app-github-callback',
   standalone: false,
   templateUrl: './github-callback.component.html',
-  styleUrls: ['./github-callback.component.scss']
+  styleUrls: ['./github-callback.component.scss'],
 })
 export class GithubCallbackComponent implements OnInit {
-  constructor(private route: ActivatedRoute, private http: HttpClient) {}
+  loading = true;
 
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private snack: MatSnackBar,
+    private svc: GithubIntegrationService
+  ) {}
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
-      const code = params['code'];      
+    this.route.queryParams.subscribe((params) => {
+      const code = params['code'];
+
       if (code) {
-        // Send code to backend
-        this.http.post('http://localhost:3000/api/github/callback', { code })
-          .subscribe(res => {
-            console.log('GitHub Token Response:', res);
-          });
+        // ✅ use service instead of direct HttpClient
+        this.svc.callback(code).subscribe({
+          next: (res: any) => {
+            console.log('GitHub Callback Response:', res);
+
+            if (res?.userId) {
+              localStorage.setItem('userId', res.userId);
+            }
+            if (res?.userName) {
+              localStorage.setItem('userName', res.userName);
+            }
+
+            this.snack.open('GitHub connected successfully!', 'OK', {
+              duration: 3000,
+            });
+
+            // ✅ Redirect back to GitHub panel/dashboard
+            this.router.navigate(['/github']);
+          },
+          error: (err) => {
+            console.error('GitHub Callback Error:', err);
+            this.snack.open('GitHub connection failed', 'OK', {
+              duration: 3000,
+            });
+            this.loading = false;
+          },
+        });
+      } else {
+        this.snack.open('No code provided in callback', 'OK', {
+          duration: 3000,
+        });
+        this.loading = false;
       }
     });
   }

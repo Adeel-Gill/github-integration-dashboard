@@ -4,18 +4,25 @@ import { environment } from '../../../../environments/environment';
 import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class GithubIntegrationService {
-  private base = `${environment.apiBase}/integrations/github`;
+  private base = `${environment.apiBase}`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
+  callback(code: string) {
+    return this.http.post(`${this.base}/callback`, { code });
+  }
   getAuthRedirect(): Observable<{ url: string }> {
     return this.http.get<{ url: string }>(`${this.base}/connect`);
   }
 
-  getStatus(): Observable<{ connected: boolean; connectedAt?: string; user?: any }> {
+  getStatus(): Observable<{
+    connected: boolean;
+    connectedAt?: string;
+    user?: any;
+  }> {
     return this.http.get<any>(`${this.base}/status`);
   }
 
@@ -31,7 +38,10 @@ export class GithubIntegrationService {
     return this.http.get<string[]>(`${this.base}/collections`);
   }
 
-  fetchCollection(collectionName: string, body: any): Observable<{ total: number; data: any[] }> {
+  fetchCollection(
+    collectionName: string,
+    body: any
+  ): Observable<{ total: number; data: any[] }> {
     return this.http.post<{ total: number; data: any[] }>(
       `${this.base}/collections/${collectionName}/query`,
       body
